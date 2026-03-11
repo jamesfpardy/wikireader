@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WikiSpeedReader</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@300;400;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #f2ede3;
+  --page:    #faf7f0;
+  --card:    #faf7f0;
+  --border:  #d4cfc4;
+  --border2: #c4bfb4;
+  --ink:     #1a1a1a;
+  --red:     #b8221a;
+  --muted:   #9a9488;
+  --warm:    #7a6f5e;
+  --stripe:  #f4f0e8;
+  --font-serif: 'Crimson Pro', Georgia, serif;
+  --font-mono:  'IBM Plex Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+
+body {
+  font-family: var(--font-mono);
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--ink);
+  border-bottom: 3px solid var(--red);
+  padding: 20px 24px;
+  text-align: center;
+}
+
+.logo {
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 300;
+  color: var(--bg);
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+/* ── LAYOUT ── */
+.app {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 28px 16px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── SEARCH ── */
+.search-section {
+  padding: 0 0 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+
+.section-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 7px;
+}
+
+.search-wrap { position: relative; }
+
+.search-input {
+  width: 100%;
+  padding: 11px 48px 11px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s;
+  letter-spacing: 0.02em;
+}
+.search-input:focus { border-color: var(--ink); }
+.search-input.ghost { color: var(--muted); }
+
+.search-btn {
+  position: absolute; right: 0; top: 0; bottom: 0;
+  width: 44px;
+  background: var(--ink); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.search-btn:hover { background: var(--red); }
+.search-btn svg { stroke: var(--bg); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Autocomplete */
+.autocomplete {
+  position: absolute; top: 100%; left: 0; right: 0;
+  background: var(--card);
+  border: 1px solid var(--ink); border-top: none;
+  z-index: 100; display: none; max-height: 260px; overflow-y: auto;
+}
+.autocomplete.open { display: block; }
+.ac-item {
+  padding: 10px 14px; cursor: pointer;
+  font-family: var(--font-mono); font-size: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 3px;
+  transition: background 0.1s;
+}
+.ac-item:last-child { border-bottom: none; }
+.ac-item:hover, .ac-item.sel { background: var(--stripe); }
+.ac-title { font-weight: 500; color: var(--ink); }
+.ac-desc { color: var(--muted); font-size: 0.68rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.status {
+  font-size: 0.65rem; letter-spacing: 0.08em;
+  color: var(--muted); min-height: 18px; margin-top: 6px;
+}
+.status.error { color: var(--red); }
+.status.loading { color: var(--warm); }
+
+/* ── DEMO BANNER ── */
+.demo-banner {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 10px;
+}
+.demo-banner:hover .demo-cta { background: var(--red); }
+.demo-text { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); }
+.demo-cta {
+  padding: 11px 20px;
+  background: var(--ink); color: var(--bg); border: none;
+  font-family: var(--font-mono); font-size: 0.72rem;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  cursor: pointer; transition: background 0.15s; white-space: nowrap;
+}
+.demo-cta:hover { background: var(--red); }
+
+/* ── PANEL ── */
+.panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.panel-head {
+  padding: 7px 14px;
+  background: var(--ink); color: var(--bg);
+  font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.panel-head .dot { color: var(--red); }
+
+/* ── ARTICLE PREVIEW ── */
+.article-preview { display: none; }
+.article-preview.visible { display: block; }
+
+.hero-img {
+  width: 100%; height: 200px; object-fit: cover;
+  border-bottom: 1px solid var(--border);
+  display: none;
+}
+.hero-img.loaded { display: block; }
+
+.article-body { padding: 16px 14px; }
+
+.article-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+
+.article-meta {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.meta-chip {
+  font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted); display: flex; align-items: center; gap: 5px;
+}
+.meta-chip strong { color: var(--ink); }
+
+.article-summary {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--warm);
+  border-left: 2px solid var(--red);
+  padding-left: 12px;
+}
+
+/* ── SECTION SELECTOR ── */
+.section-toggle-label {
+  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 7px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.toggle-all {
+  font-family: var(--font-mono); font-size: 0.62rem; color: var(--red);
+  cursor: pointer; background: none; border: none; padding: 0;
+  text-decoration: underline; text-transform: uppercase; letter-spacing: 0.1em;
+}
+
+.sections-list {
+  background: var(--card);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.section-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 14px; cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s; user-select: none;
+}
+.section-item:last-child { border-bottom: none; }
+.section-item:hover { background: var(--stripe); }
+.section-item.intro { background: var(--stripe); }
+
+.section-check {
+  width: 16px; height: 16px;
+  border: 1px solid var(--border2);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.section-item.checked .section-check { background: var(--red); border-color: var(--red); }
+.section-item.checked .section-check::after {
+  content: ''; width: 9px; height: 5px;
+  border-left: 1.5px solid white; border-bottom: 1.5px solid white;
+  transform: translateY(-1px) rotate(-45deg);
+}
+.section-name {
+  font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink); flex: 1;
+}
+.section-wc { font-size: 0.62rem; color: var(--muted); }
+.section-item:not(.checked) .section-name { color: var(--muted); text-decoration: line-through; }
+
+/* ── READ BUTTON ── */
+.read-btn {
+  width: 100%; padding: 13px;
+  background: var(--ink); color: var(--bg); border: none;
+  font-family: var(--font-serif); font-size: 1.1rem; font-weight: 400;
+  cursor: pointer; transition: background 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  margin-bottom: 24px; letter-spacing: 0.01em;
+}
+.read-btn:hover { background: var(--red); }
+.read-wc { font-family: var(--font-mono); font-size: 0.65rem; opacity: 0.6; }
+
+/* ── RELATED ── */
+.related-label {
+  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 8px;
+}
+.related-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; }
+.related-chip {
+  padding: 5px 11px;
+  background: var(--card); border: 1px solid var(--border);
+  font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink);
+  cursor: pointer; transition: all 0.15s;
+}
+.related-chip:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* ── READER ── */
+.reader { display: none; }
+.reader.visible { display: flex; flex-direction: column; }
+
+.reader-topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 14px;
+  background: var(--ink); color: var(--bg);
+  border-bottom: 3px solid var(--red);
+  margin-bottom: 0;
+}
+.reader-title {
+  font-family: var(--font-serif); font-size: 0.95rem; font-weight: 400; color: var(--bg);
+}
+.back-btn {
+  font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--muted); background: none; border: none;
+  cursor: pointer; transition: color 0.15s;
+}
+.back-btn:hover { color: var(--red); }
+
+.progress-track { height: 3px; background: var(--border); cursor: pointer; }
+.progress-fill { height: 100%; background: var(--red); transition: width 0.1s linear; pointer-events: none; }
+
+/* Word stage */
+.word-stage {
+  min-height: 200px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 44px 20px;
+  background: var(--card);
+  border: 1px solid var(--border); border-top: none;
+  position: relative; overflow: hidden;
+}
+.word-stage::before, .word-stage::after {
+  content: ''; position: absolute; top: 50%;
+  width: 20px; height: 1px; background: var(--border2);
+}
+.word-stage::before { right: calc(50% + 100px); }
+.word-stage::after { left: calc(50% + 100px); }
+
+.word-display {
+  font-family: var(--font-serif);
+  font-size: clamp(36px, 6.5vw, 66px);
+  font-weight: 300;
+  text-align: center; line-height: 1;
+}
+.word-display .orp { color: var(--red); }
+.section-ind {
+  font-family: var(--font-mono); font-size: 0.6rem;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.2em;
+  margin-top: 16px;
+}
+
+.done-overlay {
+  position: absolute; inset: 0;
+  background: rgba(250,247,240,0.96);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.done-overlay.visible { opacity: 1; pointer-events: all; }
+.done-label {
+  font-family: var(--font-mono); font-size: 0.6rem;
+  text-transform: uppercase; letter-spacing: 0.3em; color: var(--muted);
+}
+.done-wpm {
+  font-family: var(--font-serif); font-size: 64px;
+  font-weight: 300; color: var(--red); line-height: 1;
+}
+.done-sub { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); margin-bottom: 10px; }
+.done-btns { display: flex; gap: 8px; }
+.done-btn {
+  padding: 8px 18px; border: none;
+  font-family: var(--font-mono); font-size: 0.62rem;
+  text-transform: uppercase; letter-spacing: 0.12em; cursor: pointer;
+}
+.done-btn.primary { background: var(--ink); color: var(--bg); }
+.done-btn.primary:hover { background: var(--red); }
+.done-btn.secondary { background: transparent; color: var(--ink); border: 1px solid var(--border2); }
+.done-btn.secondary:hover { border-color: var(--ink); }
+
+/* Stats row */
+.stats-row {
+  display: flex;
+  border: 1px solid var(--border); border-top: none;
+  background: var(--card);
+}
+.stat {
+  flex: 1; padding: 9px 12px;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 3px;
+}
+.stat:last-child { border-right: none; }
+.stat-label { font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+.stat-val { font-size: 0.8rem; font-weight: 500; color: var(--ink); }
+
+/* Controls */
+.controls {
+  padding: 14px 0;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  border-top: 1px solid var(--border); margin-top: 0;
+}
+.play-btn {
+  width: 44px; height: 44px;
+  background: var(--ink); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.15s;
+}
+.play-btn:hover { background: var(--red); }
+.play-btn svg { fill: var(--bg); }
+
+.wpm-wrap { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 160px; }
+.wpm-label { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.wpm-val { font-size: 1.1rem; font-weight: 500; color: var(--red); width: 50px; text-align: right; }
+
+input[type=range] {
+  -webkit-appearance: none; flex: 1; height: 2px;
+  background: var(--border2); outline: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px;
+  background: var(--ink); cursor: pointer; transition: background 0.15s;
+}
+input[type=range]::-webkit-slider-thumb:hover { background: var(--red); }
+
+.kbd-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.kbd-hint { font-size: 0.62rem; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+kbd {
+  background: var(--stripe); border: 1px solid var(--border2);
+  padding: 1px 5px; font-family: var(--font-mono); font-size: 0.6rem; color: var(--ink);
+}
+
+.spinner { display: inline-block; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes wordIn { from { opacity: 0.2; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+.word-flash { animation: wordIn 0.07s ease-out; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">WikiSpeedReader</div>
+</header>
+
+<div class="app">
+
+  <!-- Search -->
+  <div class="search-section">
+    <div class="section-label">Search Wikipedia</div>
+    <div class="search-wrap" id="search-wrap">
+      <input type="text" class="search-input ghost" id="search-input"
+        value="Try: Quantum mechanics, The Roman Empire, Climate change…"
+        autocomplete="off" />
+      <button class="search-btn" id="search-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <div class="autocomplete" id="autocomplete"></div>
+    </div>
+    <div class="status" id="status"></div>
+
+    <div class="demo-banner" id="demo-banner">
+      <button class="demo-cta" id="demo-btn">New? Start here</button>
+    </div>
+  </div>
+
+  <!-- Article Preview -->
+  <div class="article-preview" id="article-preview">
+    <div class="panel">
+      <div class="panel-head">
+        <span id="panel-head-title">Article</span>
+        <span class="dot">●</span>
+      </div>
+      <img class="hero-img" id="hero-img" alt="" />
+      <div class="article-body">
+        <div class="article-title" id="article-title"></div>
+        <div class="article-meta">
+          <div class="meta-chip">Words <strong id="meta-words">—</strong></div>
+          <div class="meta-chip">Sections <strong id="meta-sections">—</strong></div>
+          <div class="meta-chip">@ 250wpm <strong id="meta-time">—</strong></div>
+        </div>
+        <div class="article-summary" id="article-summary"></div>
+      </div>
+    </div>
+
+    <div class="section-toggle-label">
+      <span>Sections to read</span>
+      <button class="toggle-all" id="toggle-all">Deselect All</button>
+    </div>
+    <div class="sections-list" id="sections-grid"></div>
+
+    <button class="read-btn" id="read-btn">
+      Start Reading <span class="read-wc" id="read-wc"></span>
+    </button>
+
+    <div id="related-section" style="display:none">
+      <div class="related-label">Related articles</div>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+  </div>
+
+  <!-- Reader -->
+  <div class="reader" id="reader">
+    <div class="reader-topbar">
+      <div class="reader-title" id="reader-title"></div>
+      <button class="back-btn" id="back-btn">← Back</button>
+    </div>
+
+    <div class="progress-track" id="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+
+    <div class="word-stage">
+      <div class="word-display" id="word-display">—</div>
+      <div class="section-ind" id="section-ind"></div>
+      <div class="done-overlay" id="done-overlay">
+        <div class="done-label">Finished</div>
+        <div class="done-wpm" id="done-wpm">—</div>
+        <div class="done-sub">avg words per minute</div>
+        <div class="done-btns">
+          <button class="done-btn primary" id="done-restart">Restart</button>
+          <button class="done-btn secondary" id="done-back">Back to Article</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat"><div class="stat-label">Word</div><div class="stat-val"><span id="stat-cur">0</span>/<span id="stat-tot">0</span></div></div>
+      <div class="stat"><div class="stat-label">Section</div><div class="stat-val" id="stat-sec">—</div></div>
+      <div class="stat"><div class="stat-label">Time left</div><div class="stat-val" id="stat-time">—</div></div>
+      <div class="stat"><div class="stat-label">WPM</div><div class="stat-val" id="stat-wpm">250</div></div>
+    </div>
+
+    <div class="controls">
+      <button class="play-btn" id="play-btn">
+        <svg id="play-icon" width="18" height="18" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+      </button>
+      <div class="wpm-wrap">
+        <span class="wpm-label">WPM</span>
+        <input type="range" id="wpm-slider" min="100" max="1000" step="25" value="250" />
+        <span class="wpm-val" id="wpm-val">250</span>
+      </div>
+      <div class="kbd-row">
+        <span class="kbd-hint"><kbd>Space</kbd> play/pause</span>
+        <span class="kbd-hint"><kbd>↑↓</kbd> speed</span>
+        <span class="kbd-hint"><kbd>←</kbd> back 10</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Essay content ─────────────────────────────────────────────────
+const ESSAY = {
+  title: "Read: Deep Attention and SpeedReading in a Distracted Age",
+  summary: "What you are doing right now is unusual. This is a speed reader — and this essay is about why reading deeply still matters in a world designed to distract you.",
+  isEssay: true,
+  links: ["Maryanne Wolf","Nicholas Carr","The Shallows (book)","Stanislas Dehaene","Literacy","Speed reading","Cognitive neuroscience","Wikipedia","Attention","Working memory"],
+  sections: [
+    { title:"WikiSpeedReader", words:`Welcome to WikiSpeedReader. What you are doing at this moment is unusual. Instead of scanning a page, your eyes are locked to a single point, and words are arriving one at a time directly into your field of focus. The human brain can process language far faster than the eye can travel across a page. The bottleneck in ordinary reading is not comprehension but movement: the eye jumps, skips, backtracks, loses its place. Speed reading — or more precisely, Rapid Serial Visual Presentation, the technique this app uses — removes that bottleneck entirely. By fixing the focal point and controlling the rate of delivery, it lets your brain do what it is already capable of doing. The average reader moves at around 200 to 250 words per minute. With practice and the right tool, 400 is well within reach, with no meaningful loss of understanding. Wikipedia is the largest repository of free human knowledge ever assembled — over 60 million articles across hundreds of languages, written and maintained by volunteers, available to anyone with an internet connection. WikiSpeedReader puts that archive directly in your hands, at your speed.`.split(' ') },
+    { title:"The Reading Circuit", words:`There is a particular kind of thinking that only happens when you read slowly. Not the retrieval of facts, not the scanning of summaries, but something quieter and stranger: the moment when an idea from one paragraph reaches back and reshapes your understanding of something you read three pages earlier. When a metaphor unlocks a concept. When you pause, stare at nothing, and feel your mind actually changing. This is what researchers call deep reading. Maryanne Wolf is an American cognitive neuroscientist and professor at UCLA, whose career has been devoted to understanding how the human brain reads. Her key insight is that reading is not natural. Unlike speech, which is hardwired into our biology and develops automatically in children, reading is an invention — barely six thousand years old — and the brain has no dedicated architecture for it. Instead, reading recruits and rewires existing structures: the visual cortex, language centres, memory systems, and the regions responsible for empathy and inference. What emerges, through years of practice, is what Wolf calls the reading circuit; a complex network that must be built through sustained exposure to text. Wolf's central argument, laid out in her book Reader Come Home, is that this circuit is not stable. And the habits of digital life — skimming, scanning, the perpetual pull of the next stimulus is training our brains out of the capacity for deep understanding. When we read deeply, we activate what Wolf calls the background silence of the text: the space in which we bring our own knowledge, emotion, and experience to bear on what the author has written. This is where comprehension tips into understanding. Where information becomes insight. Deep reading activates parts of the brain associated with memory consolidation, empathy, and complex reasoning — regions that are largely bypassed when we skim. Studies have shown that people who read literary fiction, for instance, score higher on tests of social cognition and the ability to understand other minds. Reading does not merely fill the brain with content. It shapes the brain's capacity to think. This requires time, sustained attention, and a willingness to sit with difficulty. These are precisely the conditions that modern information environments are designed to eliminate.`.split(' ') },
+    { title:"The Interruption Machine", words:`Nicholas Carr is an American technology writer and critic, best known for his 2008 Atlantic essay Is Google Making Us Stupid — one of the most widely read pieces of technology criticism of the past two decades — and for the book that followed it, The Shallows: What the Internet Is Doing to Our Brains, published in 2010 and shortlisted for the Pulitzer Prize. Carr's argument draws on his own experience of finding deep reading increasingly difficult after years of heavy internet use, and on a wide body of neuroscientific research. The web, he observed, is an interruption machine. Every hyperlink, notification, scroll or swipe is an invitation to leave, a small seizure of attention. The medium trains us toward breadth and speed, and away from the sustained, linear engagement that builds complex understanding. What we gain in access to information we may be losing in our capacity to process it. The brain rewires itself around the tools we use most. If those tools reward distraction, the brain learns distraction.`.split(' ') },
+    { title:"Retrieval versus Transformation", words:`This is not an argument against information technology. It is an argument about what different cognitive modes are good for. A search engine is extraordinary at retrieving a fact. A language model can summarise an argument or explain a concept with impressive fluency. But neither replicates what happens when you spend three hours with a difficult book, or detailed Wikipedia page, and emerge thinking differently than when you went in. The former is retrieval. The latter is transformation. Stanislas Dehaene is a French cognitive neuroscientist and professor at the College de France, widely regarded as one of the world's leading experts on the neuroscience of reading and learning. His book Reading in the Brain traces in precise detail the neural pathways that activate when a literate person encounters text — pathways that, remarkably, look almost identical across cultures and writing systems, suggesting that the brain has found a near-universal solution to the problem of decoding written language. Dehaene's research has shown that even the act of learning to read changes brain structure in measurable ways. Literate and illiterate adults, even when matched for age, intelligence, and background, process the world differently at a neurological level. The literate brain has been physically reorganised by its encounter with text. Reading does not merely transmit ideas. It builds the cognitive infrastructure through which we process ideas generally — making us more precise thinkers, with finer distinctions and more organised mental categories, not only about books, but about everything.`.split(' ') },
+    { title:"The Tension in This App", words:`There is an honest tension in an app that asks you to read faster. Speed reading, properly understood, is a trade-off. Comprehension research consistently shows that above roughly 400 words per minute, retention and understanding begin to decline for most readers. The tools of speed reading — suppressing subvocalisation, fixing the focal point, moving forward without regression — can genuinely help readers who are held back by inefficient habits. But acceleration alone is not the goal. The goal is more reading, better reading, reading without distraction, reading deep on one topic, following your train of thought, and helping you see and understand the world in a new light.`.split(' ') }
+  ]
+};
+
+// ── State ─────────────────────────────────────────────────────────
+let articleData = null;
+let words = [], sectionMap = [];
+let currentIndex = 0, wpm = 250;
+let playing = false, timer = null;
+let startTime = null, wordsReadCount = 0;
+
+const $ = id => document.getElementById(id);
+const searchInput  = $('search-input');
+const searchBtn    = $('search-btn');
+const acEl         = $('autocomplete');
+const statusEl     = $('status');
+const demoBanner   = $('demo-banner');
+const demoBtn      = $('demo-btn');
+const previewEl    = $('article-preview');
+const heroImg      = $('hero-img');
+const panelHeadTitle = $('panel-head-title');
+const titleEl      = $('article-title');
+const summaryEl    = $('article-summary');
+const metaWords    = $('meta-words');
+const metaSecs     = $('meta-sections');
+const metaTime     = $('meta-time');
+const secGrid      = $('sections-grid');
+const toggleAll    = $('toggle-all');
+const readBtn      = $('read-btn');
+const readWc       = $('read-wc');
+const relatedSec   = $('related-section');
+const relatedGrid  = $('related-grid');
+const readerEl     = $('reader');
+const readerTitle  = $('reader-title');
+const backBtn      = $('back-btn');
+const wordDisplay  = $('word-display');
+const sectionInd   = $('section-ind');
+const doneOverlay  = $('done-overlay');
+const doneWpmEl    = $('done-wpm');
+const doneRestart  = $('done-restart');
+const doneBack     = $('done-back');
+const progTrack    = $('progress-track');
+const progFill     = $('progress-fill');
+const playBtn      = $('play-btn');
+const playIcon     = $('play-icon');
+const wpmSlider    = $('wpm-slider');
+const wpmValEl     = $('wpm-val');
+const statCur      = $('stat-cur');
+const statTot      = $('stat-tot');
+const statSec      = $('stat-sec');
+const statTime     = $('stat-time');
+const statWpm      = $('stat-wpm');
+
+// ── Ghost input ───────────────────────────────────────────────────
+let ghostActive = true;
+searchInput.addEventListener('focus', () => {
+  if (ghostActive) { searchInput.value = ''; searchInput.classList.remove('ghost'); ghostActive = false; }
+});
+searchInput.addEventListener('blur', () => {
+  if (!searchInput.value.trim()) {
+    searchInput.value = 'Try: Quantum mechanics, The Roman Empire, Climate change…';
+    searchInput.classList.add('ghost'); ghostActive = true;
+  }
+});
+
+// ── Demo ──────────────────────────────────────────────────────────
+function loadDemo() { demoBanner.style.display = 'none'; renderPreview(ESSAY); }
+demoBtn.addEventListener('click', e => { e.stopPropagation(); loadDemo(); });
+demoBanner.addEventListener('click', loadDemo);
+
+// ── Autocomplete ──────────────────────────────────────────────────
+let acTimer = null, acSel = -1, acRes = [];
+
+searchInput.addEventListener('input', () => {
+  if (ghostActive) return;
+  clearTimeout(acTimer);
+  const q = searchInput.value.trim();
+  if (q.length < 2) { closeAC(); return; }
+  acTimer = setTimeout(() => fetchSuggestions(q), 280);
+});
+
+async function fetchSuggestions(q) {
+  try {
+    const r = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(q)}&limit=6&format=json&origin=*`, { signal: AbortSignal.timeout(5000) });
+    const [, titles, descs] = await r.json();
+    acRes = titles; renderAC(titles, descs);
+  } catch(e) { closeAC(); }
+}
+
+function renderAC(titles, descs) {
+  if (!titles.length) { closeAC(); return; }
+  acSel = -1;
+  acEl.innerHTML = titles.map((t, i) =>
+    `<div class="ac-item" data-idx="${i}"><span class="ac-title">${t}</span><span class="ac-desc">${descs[i]||''}</span></div>`
+  ).join('');
+  acEl.classList.add('open');
+  acEl.querySelectorAll('.ac-item').forEach(el => {
+    el.addEventListener('click', () => { searchInput.value = acRes[+el.dataset.idx]; closeAC(); loadArticle(acRes[+el.dataset.idx]); });
+  });
+}
+function closeAC() { acEl.classList.remove('open'); acEl.innerHTML=''; acRes=[]; acSel=-1; }
+
+searchInput.addEventListener('keydown', e => {
+  if (ghostActive) return;
+  const items = acEl.querySelectorAll('.ac-item');
+  if (e.key==='ArrowDown') { e.preventDefault(); acSel=Math.min(acSel+1,items.length-1); items.forEach((el,i)=>el.classList.toggle('sel',i===acSel)); }
+  else if (e.key==='ArrowUp') { e.preventDefault(); acSel=Math.max(acSel-1,-1); items.forEach((el,i)=>el.classList.toggle('sel',i===acSel)); }
+  else if (e.key==='Enter') { e.preventDefault(); const t=acSel>=0?acRes[acSel]:searchInput.value.trim(); if(t){closeAC();loadArticle(t);} }
+  else if (e.key==='Escape') closeAC();
+});
+searchBtn.addEventListener('click', () => { if(!ghostActive&&searchInput.value.trim()){closeAC();loadArticle(searchInput.value.trim());} });
+document.addEventListener('click', e => { if(!e.target.closest('#search-wrap')) closeAC(); });
+
+// ── Wikipedia ─────────────────────────────────────────────────────
+async function loadArticle(title) {
+  setStatus('◌ Loading…', 'loading');
+  previewEl.classList.remove('visible');
+  readerEl.classList.remove('visible');
+  relatedSec.style.display = 'none';
+  heroImg.classList.remove('loaded');
+  pause();
+  try {
+    const url = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=extracts|pageimages|links&explaintext=true&exsectionformat=plain&pithumbsize=800&pllimit=14&plnamespace=0&format=json&origin=*`;
+    const r = await fetch(url, { signal: AbortSignal.timeout(12000) });
+    if (!r.ok) throw new Error('Network error');
+    const data = await r.json();
+    const pages = data.query.pages;
+    const page = pages[Object.keys(pages)[0]];
+    if (page.missing !== undefined) throw new Error(`"${title}" not found on Wikipedia`);
+    if (page.thumbnail?.source) {
+      heroImg.src = page.thumbnail.source;
+      heroImg.onload = () => heroImg.classList.add('loaded');
+    }
+    const links = (page.links||[]).map(l=>l.title).filter(t=>!t.includes(':')&&t!==page.title).slice(0,10);
+    renderPreview(parseExtract(page.title, page.extract||'', links));
+    setStatus('');
+  } catch(err) {
+    setStatus('Error: ' + err.message, 'error');
+  }
+}
+
+function parseExtract(title, extract, links=[]) {
+  const lines = extract.split('\n');
+  const sections = []; let cur = { title:'Introduction', lines:[] };
+  for (const line of lines) {
+    const h = line.match(/^={2,3}\s*(.+?)\s*={2,3}$/);
+    if (h) { if(cur.lines.join(' ').trim().length>0) sections.push(cur); cur={title:h[1],lines:[]}; }
+    else cur.lines.push(line);
+  }
+  if (cur.lines.join(' ').trim().length>0) sections.push(cur);
+  const processed = sections
+    .map(s=>({title:s.title,words:s.lines.join(' ').replace(/\s+/g,' ').trim().split(' ').filter(w=>w.length>0)}))
+    .filter(s=>s.words.length>5);
+  const intro = processed[0]?.words.join(' ')||'';
+  const sents = intro.match(/[^.!?]+[.!?]+/g)||[];
+  return { title, summary:sents.slice(0,3).join(' '), sections:processed, links, isEssay:false };
+}
+
+// ── Render preview ────────────────────────────────────────────────
+function renderPreview(data) {
+  articleData = data;
+  const total = data.sections.reduce((a,s)=>a+s.words.length, 0);
+  const mins = Math.ceil(total/250);
+  panelHeadTitle.textContent = data.isEssay ? 'Essay' : 'Article';
+  titleEl.textContent = data.title;
+  summaryEl.textContent = data.summary;
+  metaWords.textContent = total.toLocaleString();
+  metaSecs.textContent = data.sections.length;
+  metaTime.textContent = mins < 60 ? `${mins}m` : `${Math.floor(mins/60)}h ${mins%60}m`;
+  if (data.isEssay) heroImg.classList.remove('loaded');
+
+  secGrid.innerHTML = data.sections.map((s, i) =>
+    `<div class="section-item checked${i===0?' intro':''}" data-idx="${i}">
+      <div class="section-check"></div>
+      <div class="section-name">${s.title}</div>
+      <div class="section-wc">${s.words.length}w</div>
+    </div>`
+  ).join('');
+  secGrid.querySelectorAll('.section-item').forEach(el => {
+    el.addEventListener('click', () => { el.classList.toggle('checked'); updateReadBtn(); });
+  });
+
+  if (data.links && data.links.length > 0) {
+    relatedGrid.innerHTML = data.links.map(t =>
+      `<div class="related-chip" data-title="${t}">${t}</div>`
+    ).join('');
+    relatedGrid.querySelectorAll('.related-chip').forEach(el => {
+      el.addEventListener('click', () => {
+        searchInput.value = el.dataset.title;
+        searchInput.classList.remove('ghost'); ghostActive = false;
+        loadArticle(el.dataset.title);
+      });
+    });
+    relatedSec.style.display = 'block';
+  } else {
+    relatedSec.style.display = 'none';
+  }
+
+  updateReadBtn();
+  previewEl.classList.add('visible');
+}
+
+function getChecked() {
+  return [...secGrid.querySelectorAll('.section-item.checked')].map(el=>articleData.sections[+el.dataset.idx]).filter(Boolean);
+}
+function updateReadBtn() {
+  const checked = getChecked();
+  const total = checked.reduce((a,s)=>a+s.words.length, 0);
+  const allChecked = secGrid.querySelectorAll('.section-item.checked').length === articleData.sections.length;
+  toggleAll.textContent = allChecked ? 'Deselect All' : 'Select All';
+  readWc.textContent = total > 0 ? `· ${total.toLocaleString()} words` : '';
+  readBtn.disabled = total === 0;
+}
+toggleAll.addEventListener('click', () => {
+  const items = secGrid.querySelectorAll('.section-item');
+  const all = secGrid.querySelectorAll('.section-item.checked').length === items.length;
+  items.forEach(el => el.classList.toggle('checked', !all));
+  updateReadBtn();
+});
+
+readBtn.addEventListener('click', () => {
+  const checked = getChecked(); if (!checked.length) return;
+  words=[]; sectionMap=[];
+  for (const s of checked) { const start=words.length; words.push(...s.words); sectionMap.push({title:s.title,start,end:words.length-1}); }
+  currentIndex=0; doneOverlay.classList.remove('visible');
+  previewEl.classList.remove('visible'); readerEl.classList.add('visible');
+  readerTitle.textContent = articleData.title;
+  showWord(0);
+});
+
+backBtn.addEventListener('click', goBack);
+doneBack.addEventListener('click', goBack);
+function goBack() { pause(); readerEl.classList.remove('visible'); previewEl.classList.add('visible'); }
+
+// ── ORP ───────────────────────────────────────────────────────────
+function orpIdx(w) { const l=w.replace(/[^a-zA-Z0-9]/g,'').length; if(l<=1)return 0;if(l<=5)return 1;if(l<=9)return 2;if(l<=13)return 3;return 4; }
+function renderWord(w) { if(!w)return'—'; const i=orpIdx(w); return w.slice(0,i)+`<span class="orp">${w[i]||''}</span>`+w.slice(i+1); }
+function curSection() { return sectionMap.find(s=>currentIndex>=s.start&&currentIndex<=s.end)||sectionMap[0]; }
+
+function showWord(idx) {
+  if (idx>=words.length) { finish(); return; }
+  wordDisplay.innerHTML = renderWord(words[idx]);
+  wordDisplay.classList.remove('word-flash'); void wordDisplay.offsetWidth; wordDisplay.classList.add('word-flash');
+  const sec = curSection(); sectionInd.textContent = sec ? sec.title : '';
+  progFill.style.width = (words.length>1?(idx/(words.length-1))*100:100)+'%';
+  updateStats();
+}
+function updateStats() {
+  statCur.textContent = currentIndex+1; statTot.textContent = words.length;
+  const sec = curSection(); statSec.textContent = sec ? (sec.title.length>14?sec.title.slice(0,13)+'…':sec.title) : '—';
+  const s = Math.round((words.length-currentIndex)/(wpm/60));
+  statTime.textContent = s<60 ? s+'s' : Math.floor(s/60)+'m '+(s%60)+'s';
+  statWpm.textContent = wpm;
+}
+
+// ── Playback ──────────────────────────────────────────────────────
+function getDelay() { const w=words[currentIndex]||''; let d=60000/wpm; if(w.match(/[.!?]$/))d*=1.9;else if(w.match(/[,;:]$/))d*=1.3;else if(w.length>9)d*=1.1; return d; }
+function play() { if(currentIndex>=words.length)currentIndex=0; playing=true; startTime=Date.now(); wordsReadCount=0; setPlayIcon(true); doneOverlay.classList.remove('visible'); tick(); }
+function tick() { if(!playing)return; showWord(currentIndex); timer=setTimeout(()=>{ if(!playing)return; wordsReadCount++; currentIndex++; if(currentIndex>=words.length){finish();return;} tick(); },getDelay()); }
+function pause() { playing=false; clearTimeout(timer); setPlayIcon(false); }
+function togglePlay() { if(!words.length)return; playing?pause():play(); }
+function finish() { playing=false; clearTimeout(timer); setPlayIcon(false); const e=startTime?(Date.now()-startTime)/60000:1; doneWpmEl.textContent=e>0?Math.round(wordsReadCount/e):wpm; doneOverlay.classList.add('visible'); }
+function setPlayIcon(p) { playIcon.innerHTML=p?'<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>':'<polygon points="5,3 19,12 5,21"/>'; }
+
+playBtn.addEventListener('click', togglePlay);
+doneRestart.addEventListener('click', () => { pause(); currentIndex=0; doneOverlay.classList.remove('visible'); showWord(0); });
+wpmSlider.addEventListener('input', () => { wpm=+wpmSlider.value; wpmValEl.textContent=wpm; updateStats(); if(playing){clearTimeout(timer);tick();} });
+progTrack.addEventListener('click', e => {
+  if(!words.length)return;
+  currentIndex=Math.max(0,Math.min(words.length-1,Math.floor((e.clientX-progTrack.getBoundingClientRect().left)/progTrack.offsetWidth*words.length)));
+  doneOverlay.classList.remove('visible'); showWord(currentIndex); if(playing){clearTimeout(timer);tick();}
+});
+document.addEventListener('keydown', e => {
+  if(e.target.tagName==='INPUT')return;
+  if(e.key===' '){e.preventDefault();if(readerEl.classList.contains('visible'))togglePlay();}
+  if(e.key==='ArrowLeft'&&readerEl.classList.contains('visible')){pause();currentIndex=Math.max(0,currentIndex-10);showWord(currentIndex);}
+  if(e.key==='ArrowUp'){wpm=Math.min(1000,wpm+25);wpmSlider.value=wpm;wpmValEl.textContent=wpm;updateStats();}
+  if(e.key==='ArrowDown'){wpm=Math.max(100,wpm-25);wpmSlider.value=wpm;wpmValEl.textContent=wpm;updateStats();}
+});
+
+function setStatus(msg,type=''){statusEl.innerHTML=msg;statusEl.className='status'+(type?' '+type:'');}
+</script>
+</body>
+</html>
