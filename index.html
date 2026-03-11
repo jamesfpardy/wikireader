@@ -65,11 +65,11 @@ header {
 }
 
 .section-label {
-  font-size: 0.62rem;
-  letter-spacing: 0.2em;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--muted);
-  margin-bottom: 7px;
+  margin-bottom: 8px;
 }
 
 .search-wrap { position: relative; }
@@ -78,7 +78,7 @@ header {
   width: 100%;
   padding: 11px 48px 11px 14px;
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: 0.95rem;
   background: var(--card);
   border: 1px solid var(--border);
   color: var(--ink);
@@ -109,7 +109,7 @@ header {
 .autocomplete.open { display: block; }
 .ac-item {
   padding: 10px 14px; cursor: pointer;
-  font-family: var(--font-mono); font-size: 0.75rem;
+  font-family: var(--font-mono); font-size: 0.82rem;
   border-bottom: 1px solid var(--border);
   display: flex; flex-direction: column; gap: 3px;
   transition: background 0.1s;
@@ -117,10 +117,10 @@ header {
 .ac-item:last-child { border-bottom: none; }
 .ac-item:hover, .ac-item.sel { background: var(--stripe); }
 .ac-title { font-weight: 500; color: var(--ink); }
-.ac-desc { color: var(--muted); font-size: 0.68rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ac-desc { color: var(--muted); font-size: 0.74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .status {
-  font-size: 0.65rem; letter-spacing: 0.08em;
+  font-size: 0.72rem; letter-spacing: 0.06em;
   color: var(--muted); min-height: 18px; margin-top: 6px;
 }
 .status.error { color: var(--red); }
@@ -152,7 +152,7 @@ header {
 .panel-head {
   padding: 7px 14px;
   background: var(--ink); color: var(--bg);
-  font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase;
+  font-size: 0.70rem; letter-spacing: 0.12em; text-transform: uppercase;
   display: flex; align-items: center; justify-content: space-between;
 }
 .panel-head .dot { color: var(--red); }
@@ -161,12 +161,7 @@ header {
 .article-preview { display: none; }
 .article-preview.visible { display: block; }
 
-.hero-img {
-  width: 100%; height: 200px; object-fit: cover;
-  border-bottom: 1px solid var(--border);
-  display: none;
-}
-.hero-img.loaded { display: block; }
+.hero-img { display: none !important; }
 
 .article-body { padding: 16px 14px; }
 
@@ -186,14 +181,14 @@ header {
   border-bottom: 1px solid var(--border);
 }
 .meta-chip {
-  font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+  font-size: 0.70rem; letter-spacing: 0.08em; text-transform: uppercase;
   color: var(--muted); display: flex; align-items: center; gap: 5px;
 }
 .meta-chip strong { color: var(--ink); }
 
 .article-summary {
   font-family: var(--font-serif);
-  font-size: 1rem;
+  font-size: 1.1rem;
   line-height: 1.7;
   color: var(--warm);
   border-left: 2px solid var(--red);
@@ -202,12 +197,12 @@ header {
 
 /* ── SECTION SELECTOR ── */
 .section-toggle-label {
-  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 7px;
+  font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 8px;
   display: flex; justify-content: space-between; align-items: center;
 }
 .toggle-all {
-  font-family: var(--font-mono); font-size: 0.62rem; color: var(--red);
+  font-family: var(--font-mono); font-size: 0.72rem; color: var(--red);
   cursor: pointer; background: none; border: none; padding: 0;
   text-decoration: underline; text-transform: uppercase; letter-spacing: 0.1em;
 }
@@ -220,7 +215,7 @@ header {
 }
 .section-item {
   display: flex; align-items: center; gap: 10px;
-  padding: 9px 14px; cursor: pointer;
+  padding: 11px 14px; cursor: pointer;
   border-bottom: 1px solid var(--border);
   transition: background 0.1s; user-select: none;
 }
@@ -242,33 +237,33 @@ header {
   transform: translateY(-1px) rotate(-45deg);
 }
 .section-name {
-  font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink); flex: 1;
+  font-family: var(--font-mono); font-size: 0.82rem; color: var(--ink); flex: 1;
 }
-.section-wc { font-size: 0.62rem; color: var(--muted); }
+.section-wc { font-size: 0.70rem; color: var(--muted); }
 .section-item:not(.checked) .section-name { color: var(--muted); text-decoration: line-through; }
 
 /* ── READ BUTTON ── */
 .read-btn {
   width: 100%; padding: 13px;
   background: var(--ink); color: var(--bg); border: none;
-  font-family: var(--font-serif); font-size: 1.1rem; font-weight: 400;
+  font-family: var(--font-serif); font-size: 1.25rem; font-weight: 400;
   cursor: pointer; transition: background 0.15s;
   display: flex; align-items: center; justify-content: center; gap: 10px;
   margin-bottom: 24px; letter-spacing: 0.01em;
 }
 .read-btn:hover { background: var(--red); }
-.read-wc { font-family: var(--font-mono); font-size: 0.65rem; opacity: 0.6; }
+.read-wc { font-family: var(--font-mono); font-size: 0.74rem; opacity: 0.6; }
 
 /* ── RELATED ── */
 .related-label {
-  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+  font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
   color: var(--muted); margin-bottom: 8px;
 }
 .related-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; }
 .related-chip {
   padding: 5px 11px;
   background: var(--card); border: 1px solid var(--border);
-  font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink);
+  font-family: var(--font-mono); font-size: 0.76rem; color: var(--ink);
   cursor: pointer; transition: all 0.15s;
 }
 .related-chip:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
@@ -288,8 +283,8 @@ header {
   font-family: var(--font-serif); font-size: 0.95rem; font-weight: 400; color: var(--bg);
 }
 .back-btn {
-  font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
-  letter-spacing: 0.1em; color: var(--muted); background: none; border: none;
+  font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--muted); background: none; border: none;
   cursor: pointer; transition: color 0.15s;
 }
 .back-btn:hover { color: var(--red); }
@@ -322,7 +317,7 @@ header {
 }
 .word-display .orp { color: var(--red); }
 .section-ind {
-  font-family: var(--font-mono); font-size: 0.6rem;
+  font-family: var(--font-mono); font-size: 0.70rem;
   color: var(--muted); text-transform: uppercase; letter-spacing: 0.2em;
   margin-top: 16px;
 }
@@ -336,19 +331,19 @@ header {
 }
 .done-overlay.visible { opacity: 1; pointer-events: all; }
 .done-label {
-  font-family: var(--font-mono); font-size: 0.6rem;
+  font-family: var(--font-mono); font-size: 0.70rem;
   text-transform: uppercase; letter-spacing: 0.3em; color: var(--muted);
 }
 .done-wpm {
   font-family: var(--font-serif); font-size: 64px;
   font-weight: 300; color: var(--red); line-height: 1;
 }
-.done-sub { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); margin-bottom: 10px; }
+.done-sub { font-family: var(--font-mono); font-size: 0.74rem; color: var(--muted); margin-bottom: 10px; }
 .done-btns { display: flex; gap: 8px; }
 .done-btn {
   padding: 8px 18px; border: none;
-  font-family: var(--font-mono); font-size: 0.62rem;
-  text-transform: uppercase; letter-spacing: 0.12em; cursor: pointer;
+  font-family: var(--font-mono); font-size: 0.72rem;
+  text-transform: uppercase; letter-spacing: 0.10em; cursor: pointer;
 }
 .done-btn.primary { background: var(--ink); color: var(--bg); }
 .done-btn.primary:hover { background: var(--red); }
@@ -362,22 +357,22 @@ header {
   background: var(--card);
 }
 .stat {
-  flex: 1; padding: 9px 12px;
+  flex: 1; padding: 12px 14px;
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column; gap: 3px;
 }
 .stat:last-child { border-right: none; }
-.stat-label { font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
-.stat-val { font-size: 0.8rem; font-weight: 500; color: var(--ink); }
+.stat-label { font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.stat-val { font-size: 0.92rem; font-weight: 500; color: var(--ink); }
 
 /* Controls */
 .controls {
-  padding: 14px 0;
+  padding: 18px 0;
   display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
   border-top: 1px solid var(--border); margin-top: 0;
 }
 .play-btn {
-  width: 44px; height: 44px;
+  width: 50px; height: 50px;
   background: var(--ink); border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; transition: background 0.15s;
@@ -386,8 +381,8 @@ header {
 .play-btn svg { fill: var(--bg); }
 
 .wpm-wrap { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 160px; }
-.wpm-label { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
-.wpm-val { font-size: 1.1rem; font-weight: 500; color: var(--red); width: 50px; text-align: right; }
+.wpm-label { font-size: 0.72rem; letter-spacing: 0.10em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.wpm-val { font-size: 1.3rem; font-weight: 500; color: var(--red); width: 50px; text-align: right; }
 
 input[type=range] {
   -webkit-appearance: none; flex: 1; height: 2px;
@@ -400,16 +395,42 @@ input[type=range]::-webkit-slider-thumb {
 input[type=range]::-webkit-slider-thumb:hover { background: var(--red); }
 
 .kbd-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.kbd-hint { font-size: 0.62rem; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+.kbd-hint { font-size: 0.70rem; color: var(--muted); display: flex; align-items: center; gap: 4px; }
 kbd {
   background: var(--stripe); border: 1px solid var(--border2);
-  padding: 1px 5px; font-family: var(--font-mono); font-size: 0.6rem; color: var(--ink);
+  padding: 1px 5px; font-family: var(--font-mono); font-size: 0.70rem; color: var(--ink);
 }
 
 .spinner { display: inline-block; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes wordIn { from { opacity: 0.2; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
 .word-flash { animation: wordIn 0.07s ease-out; }
+
+/* ── MOBILE ── */
+@media (max-width: 600px) {
+  header { padding: 16px; }
+  .logo { font-size: 1.5rem; }
+  .app { padding: 20px 14px 80px; }
+  .search-input { font-size: 0.9rem; padding: 13px 48px 13px 12px; }
+  .article-title { font-size: 1.4rem; }
+  .article-summary { font-size: 1rem; }
+  .section-item { padding: 13px 12px; }
+  .section-name { font-size: 0.82rem; }
+  .read-btn { font-size: 1.1rem; padding: 14px; }
+  .word-display { font-size: clamp(36px, 10vw, 56px); }
+  .word-stage { min-height: 180px; padding: 36px 16px; }
+  .word-stage::before, .word-stage::after { display: none; }
+  .stats-row { flex-wrap: wrap; }
+  .stat { min-width: 50%; border-bottom: 1px solid var(--border); }
+  .stat:nth-child(2n) { border-right: none; }
+  .controls { gap: 12px; padding: 14px 0; }
+  .wpm-wrap { min-width: 140px; }
+  .kbd-row { display: none; }
+  .related-chip { font-size: 0.74rem; padding: 7px 10px; }
+  .done-wpm { font-size: 52px; }
+  .done-btns { flex-direction: column; align-items: center; }
+  .reader-title { font-size: 0.82rem; max-width: 60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
 </style>
 </head>
 <body>
@@ -446,7 +467,6 @@ kbd {
         <span id="panel-head-title">Article</span>
         <span class="dot">●</span>
       </div>
-      <img class="hero-img" id="hero-img" alt="" />
       <div class="article-body">
         <div class="article-title" id="article-title"></div>
         <div class="article-meta">
@@ -528,16 +548,16 @@ kbd {
 <script>
 // ── Essay content ─────────────────────────────────────────────────
 const ESSAY = {
-  title: "Read: Deep Attention and SpeedReading in a Distracted Age",
-  summary: "What you are doing right now is unusual. This is a speed reader — and this essay is about why reading deeply still matters in a world designed to distract you.",
+  title: "Read More: SpeedReading in a Distracted Age",
+  summary: "A little introduction to speed reading and why we think reading is important.",
   isEssay: true,
   links: ["Maryanne Wolf","Nicholas Carr","The Shallows (book)","Stanislas Dehaene","Literacy","Speed reading","Cognitive neuroscience","Wikipedia","Attention","Working memory"],
   sections: [
     { title:"WikiSpeedReader", words:`Welcome to WikiSpeedReader. What you are doing at this moment is unusual. Instead of scanning a page, your eyes are locked to a single point, and words are arriving one at a time directly into your field of focus. The human brain can process language far faster than the eye can travel across a page. The bottleneck in ordinary reading is not comprehension but movement: the eye jumps, skips, backtracks, loses its place. Speed reading — or more precisely, Rapid Serial Visual Presentation, the technique this app uses — removes that bottleneck entirely. By fixing the focal point and controlling the rate of delivery, it lets your brain do what it is already capable of doing. The average reader moves at around 200 to 250 words per minute. With practice and the right tool, 400 is well within reach, with no meaningful loss of understanding. Wikipedia is the largest repository of free human knowledge ever assembled — over 60 million articles across hundreds of languages, written and maintained by volunteers, available to anyone with an internet connection. WikiSpeedReader puts that archive directly in your hands, at your speed.`.split(' ') },
     { title:"The Reading Circuit", words:`There is a particular kind of thinking that only happens when you read slowly. Not the retrieval of facts, not the scanning of summaries, but something quieter and stranger: the moment when an idea from one paragraph reaches back and reshapes your understanding of something you read three pages earlier. When a metaphor unlocks a concept. When you pause, stare at nothing, and feel your mind actually changing. This is what researchers call deep reading. Maryanne Wolf is an American cognitive neuroscientist and professor at UCLA, whose career has been devoted to understanding how the human brain reads. Her key insight is that reading is not natural. Unlike speech, which is hardwired into our biology and develops automatically in children, reading is an invention — barely six thousand years old — and the brain has no dedicated architecture for it. Instead, reading recruits and rewires existing structures: the visual cortex, language centres, memory systems, and the regions responsible for empathy and inference. What emerges, through years of practice, is what Wolf calls the reading circuit; a complex network that must be built through sustained exposure to text. Wolf's central argument, laid out in her book Reader Come Home, is that this circuit is not stable. And the habits of digital life — skimming, scanning, the perpetual pull of the next stimulus is training our brains out of the capacity for deep understanding. When we read deeply, we activate what Wolf calls the background silence of the text: the space in which we bring our own knowledge, emotion, and experience to bear on what the author has written. This is where comprehension tips into understanding. Where information becomes insight. Deep reading activates parts of the brain associated with memory consolidation, empathy, and complex reasoning — regions that are largely bypassed when we skim. Studies have shown that people who read literary fiction, for instance, score higher on tests of social cognition and the ability to understand other minds. Reading does not merely fill the brain with content. It shapes the brain's capacity to think. This requires time, sustained attention, and a willingness to sit with difficulty. These are precisely the conditions that modern information environments are designed to eliminate.`.split(' ') },
     { title:"The Interruption Machine", words:`Nicholas Carr is an American technology writer and critic, best known for his 2008 Atlantic essay Is Google Making Us Stupid — one of the most widely read pieces of technology criticism of the past two decades — and for the book that followed it, The Shallows: What the Internet Is Doing to Our Brains, published in 2010 and shortlisted for the Pulitzer Prize. Carr's argument draws on his own experience of finding deep reading increasingly difficult after years of heavy internet use, and on a wide body of neuroscientific research. The web, he observed, is an interruption machine. Every hyperlink, notification, scroll or swipe is an invitation to leave, a small seizure of attention. The medium trains us toward breadth and speed, and away from the sustained, linear engagement that builds complex understanding. What we gain in access to information we may be losing in our capacity to process it. The brain rewires itself around the tools we use most. If those tools reward distraction, the brain learns distraction.`.split(' ') },
-    { title:"Retrieval versus Transformation", words:`This is not an argument against information technology. It is an argument about what different cognitive modes are good for. A search engine is extraordinary at retrieving a fact. A language model can summarise an argument or explain a concept with impressive fluency. But neither replicates what happens when you spend three hours with a difficult book, or detailed Wikipedia page, and emerge thinking differently than when you went in. The former is retrieval. The latter is transformation. Stanislas Dehaene is a French cognitive neuroscientist and professor at the College de France, widely regarded as one of the world's leading experts on the neuroscience of reading and learning. His book Reading in the Brain traces in precise detail the neural pathways that activate when a literate person encounters text — pathways that, remarkably, look almost identical across cultures and writing systems, suggesting that the brain has found a near-universal solution to the problem of decoding written language. Dehaene's research has shown that even the act of learning to read changes brain structure in measurable ways. Literate and illiterate adults, even when matched for age, intelligence, and background, process the world differently at a neurological level. The literate brain has been physically reorganised by its encounter with text. Reading does not merely transmit ideas. It builds the cognitive infrastructure through which we process ideas generally — making us more precise thinkers, with finer distinctions and more organised mental categories, not only about books, but about everything.`.split(' ') },
-    { title:"The Tension in This App", words:`There is an honest tension in an app that asks you to read faster. Speed reading, properly understood, is a trade-off. Comprehension research consistently shows that above roughly 400 words per minute, retention and understanding begin to decline for most readers. The tools of speed reading — suppressing subvocalisation, fixing the focal point, moving forward without regression — can genuinely help readers who are held back by inefficient habits. But acceleration alone is not the goal. The goal is more reading, better reading, reading without distraction, reading deep on one topic, following your train of thought, and helping you see and understand the world in a new light.`.split(' ') }
+    { title:"Retrieval versus Transformation", words:`This is not an argument against information technology. It is an argument about what different cognitive modes are good for. A search engine is extraordinary at retrieving a fact. A language model can summarise an argument or explain a concept with impressive fluency. But neither replicates what happens when you spend three hours with a difficult book, or detailed Wikipedia page, and emerge thinking differently than when you went in. The former is retrieval. The latter is transformation.`.split(' ') },
+    { title:"The Tension in This App", words:`There is an honest tension in an app that asks you to read faster. Speed reading, properly understood, is a trade-off. Comprehension research consistently shows that above roughly 400 words per minute, retention and understanding begin to decline for most readers. The tools of speed reading — suppressing subvocalisation, fixing the focal point, moving forward without regression — can genuinely help readers who are held back by inefficient habits. But acceleration alone is not the goal. The goal is more reading, better reading, reading without distraction, reading deep on one topic, following your train of thought, and helping you see and understand the world in a new way.`.split(' ') }
   ]
 };
 
@@ -656,7 +676,6 @@ async function loadArticle(title) {
   previewEl.classList.remove('visible');
   readerEl.classList.remove('visible');
   relatedSec.style.display = 'none';
-  heroImg.classList.remove('loaded');
   pause();
   try {
     const url = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=extracts|pageimages|links&explaintext=true&exsectionformat=plain&pithumbsize=800&pllimit=14&plnamespace=0&format=json&origin=*`;
@@ -666,10 +685,7 @@ async function loadArticle(title) {
     const pages = data.query.pages;
     const page = pages[Object.keys(pages)[0]];
     if (page.missing !== undefined) throw new Error(`"${title}" not found on Wikipedia`);
-    if (page.thumbnail?.source) {
-      heroImg.src = page.thumbnail.source;
-      heroImg.onload = () => heroImg.classList.add('loaded');
-    }
+
     const links = (page.links||[]).map(l=>l.title).filter(t=>!t.includes(':')&&t!==page.title).slice(0,10);
     renderPreview(parseExtract(page.title, page.extract||'', links));
     setStatus('');
@@ -706,7 +722,6 @@ function renderPreview(data) {
   metaWords.textContent = total.toLocaleString();
   metaSecs.textContent = data.sections.length;
   metaTime.textContent = mins < 60 ? `${mins}m` : `${Math.floor(mins/60)}h ${mins%60}m`;
-  if (data.isEssay) heroImg.classList.remove('loaded');
 
   secGrid.innerHTML = data.sections.map((s, i) =>
     `<div class="section-item checked${i===0?' intro':''}" data-idx="${i}">
